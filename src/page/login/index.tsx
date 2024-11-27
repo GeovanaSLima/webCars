@@ -16,7 +16,7 @@ type FormData = z.infer<typeof schema>
 export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    mode: "onSubmit"
+    mode: "onChange"
   })
 
   function onSubmit(data: FormData) {
@@ -32,7 +32,7 @@ export default function Login() {
         </Link>
 
         <form 
-          className="bg-white max-w-xl w-full rounded-lg p-4"
+          className="bg-white max-w-lg w-full rounded-lg p-4"
           onSubmit={handleSubmit(onSubmit)}  
         >
           <div className="mb-3">
@@ -63,6 +63,13 @@ export default function Login() {
           </button>
 
         </form>
+
+        <Link 
+          to="/register"
+          className="font-light text-sm text-zinc-500 hover:text-zinc-700 transition-all"
+        >
+          Ainda não possui uma conta? Cadastre-se
+        </Link>
       </div>
     </Container>
   )
