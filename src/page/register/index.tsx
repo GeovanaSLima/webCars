@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 import { auth } from '../../services/firebaseConnection';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 
 const schema = z.object({
   name: z.string().min(1, "O campo nome é obrigatório"),
@@ -19,6 +20,8 @@ type FormData = z.infer<typeof schema>
 
 export default function Register() {
   const navigate = useNavigate();
+  const { handleUserInfo } = useContext(AuthContext);
+
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onChange"
@@ -39,13 +42,21 @@ export default function Register() {
         displayName: data.name
       })
 
+      handleUserInfo({
+        uid: user.user.uid,
+        name: data.name,
+        email: data.email
+      })
+
       console.log("Cadastrado com sucesso")
 
       navigate("/dashboard", { replace: true })
     })
+
     .catch((error) => {
       console.log("Erro ao cadastrar o usuário", error)
     })
+
   }
 
 
