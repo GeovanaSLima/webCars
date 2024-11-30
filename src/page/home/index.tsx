@@ -10,7 +10,7 @@ export default function Home() {
           className="w-full border-2 rounded-lg h-9 px-3 outline-none"  
         />
         <button 
-          className="bg-red-500 h-9 px-8 rounded-lg text-white font-medium text-lg"
+          className="bg-primary-500 hover:bg-primary-600 transition-all h-9 px-8 rounded-lg text-white font-medium text-lg shadow-md"
         >
           Buscar
         </button>
