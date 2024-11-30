@@ -1,8 +1,10 @@
+import { Container } from "../../components/container";
+import { DashHeader } from "../../components/dashHeader";
 
 export default function Dashboard() {
   return (
-    <main>
-      <h1>Dash</h1>
-    </main>
+    <Container>
+      <DashHeader />
+    </Container>
   )
 }
