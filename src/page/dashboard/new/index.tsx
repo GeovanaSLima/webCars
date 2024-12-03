@@ -53,15 +53,14 @@ export default function New() {
       return;
     }  
 
-    await handleImageUpload(images);
     
-    const carImages = images.map( car => {
-      return{
-        uid: car.uid,
-        name: car.name,
-        url: car.url
-      }
-    })
+    const uploadedImages = await handleImageUpload(images);
+
+    const carImages = uploadedImages.map((car) => ({
+      uid: car.uid,
+      name: car.name,
+      url: car.url,
+    }));
 
     addDoc(collection(db, "cars"), {
       name: data.name,
@@ -112,28 +111,28 @@ export default function New() {
     }
   }
 
-  async function handleImageUpload(imagesList: ImageProps[]) {
+  async function handleImageUpload(imagesList: ImageProps[]): Promise<ImageProps[]> {
     if (!user?.uid) {
-      return;
+      return [];
     }
-
-    const currentUid = user?.uid;
-
-    imagesList.forEach((image) => {
-      const uploadRef = ref(storage, `images/${currentUid}/${image.uid}`)
-
-      uploadBytes(uploadRef, image.file)
-      .then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((downloadUrl) => {
-          setImages((prevImages) =>
-            prevImages.map((img) => image.uid === image.uid ? { ...img, url: downloadUrl } : img)
-          )
-        })
-      })
-    })
-
-    
-
+  
+    const currentUid = user.uid;
+  
+    const uploadPromises = imagesList.map(async (image) => {
+      const uploadRef = ref(storage, `images/${currentUid}/${image.uid}`);
+      const snapshot = await uploadBytes(uploadRef, image.file);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+  
+      return {
+        ...image,
+        url: downloadUrl,
+      };
+    });
+  
+    const updatedImages = await Promise.all(uploadPromises);
+  
+    setImages(updatedImages); 
+    return updatedImages; 
   }
 
   function handleDeleteImage(itemUid: string | null) {
