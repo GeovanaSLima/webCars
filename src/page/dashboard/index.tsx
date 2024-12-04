@@ -3,12 +3,10 @@ import { Container } from "../../components/container";
 import { DashHeader } from "../../components/dashHeader";
 import { useContext, useEffect, useState } from "react";
 import { db, storage } from "../../services/firebaseConnection";
-import { collection, deleteDoc, doc, getDocs, orderBy, query, where } from "firebase/firestore";
-import { CarProps, CarImageProps } from "../home";
+import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/firestore";
+import { CarProps } from "../home";
 import { AuthContext } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
 import { deleteObject, ref } from "firebase/storage";
-import { toast } from "react-toastify";
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
