@@ -7,6 +7,7 @@ import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/fire
 import { CarProps } from "../home";
 import { AuthContext } from "../../context/AuthContext";
 import { deleteObject, ref } from "firebase/storage";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
@@ -133,24 +134,26 @@ export default function Dashboard() {
                       >
                         <FiTrash2 size={23} color="#000" />
                       </button>
-                      <img
-                        className="w-full rounded-lg mb-2 max-h-72 object-cover"
-                        src={car.images[0]?.url}
-                        alt="Carro"
-                      />
-                      <p className="font-bold mt-1 mb-2 px-4">{car.name}</p>
-                      <div className="flex flex-col px-4">
-                        <span className="text-zinc-700 mb-6">
-                          Ano {car.year} | {car.km}
-                        </span>
-                        <strong className="text-balance font-medium text-xl">
-                          R$ {car.price}
-                        </strong>
-                      </div>
-                      <div className="w-full h-px bg-slate-200 my-2"></div>
-                      <div className="px-4 pb-2">
-                        <span className="text-zinc-700">{car.city}</span>
-                      </div>
+                      <Link to={`/car/${car.id}`}>
+                        <img
+                          className="w-full rounded-lg mb-2 max-h-72 object-cover"
+                          src={car.images[0]?.url}
+                          alt="Carro"
+                          />
+                        <p className="font-bold mt-1 mb-2 px-4">{car.name}</p>
+                        <div className="flex flex-col px-4">
+                          <span className="text-zinc-700 mb-6">
+                            Ano {car.year} | {car.km}
+                          </span>
+                          <strong className="text-balance font-medium text-xl">
+                            R$ {car.price}
+                          </strong>
+                        </div>
+                        <div className="w-full h-px bg-slate-200 my-2"></div>
+                        <div className="px-4 pb-2">
+                          <span className="text-zinc-700">{car.city}</span>
+                        </div>
+                      </Link>
                     </>
                   )}
                 </section>

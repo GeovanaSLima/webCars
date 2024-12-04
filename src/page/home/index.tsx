@@ -13,6 +13,12 @@ export interface CarProps {
   city: string;
   km: string;
   images: CarImageProps[];
+  owner?: string;
+  model?: string;
+  userUid?: string;
+  whatsapp?: string;
+  created?: string;
+  description?: string;
 }
 
 export interface CarImageProps {
