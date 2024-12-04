@@ -4,7 +4,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
 import { Link } from "react-router-dom";
 
-interface CarProps {
+export interface CarProps {
   id: string;
   name: string;
   year: string;
@@ -15,7 +15,7 @@ interface CarProps {
   images: CarImageProps[];
 }
 
-interface CarImageProps {
+export interface CarImageProps {
   name: string;
   uid: string;
   url: string;
@@ -47,7 +47,6 @@ export default function Home() {
         setCars(listCars);
         setIsLoading(false);
 
-        // Pré-carregamento das imagens
         const initialLoadedImages = { ...loadedImages };
         listCars.forEach((car) => {
           if (car.images.length > 0 && car.images[0]?.url) {
@@ -61,7 +60,7 @@ export default function Home() {
         });
       } catch (error) {
         console.error("Erro ao carregar os carros:", error);
-        setIsLoading(false); // Encerra o carregamento mesmo em caso de erro
+        setIsLoading(false); 
       }
     }
 
@@ -86,9 +85,8 @@ export default function Home() {
       </h1>
 
       <main className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Mostrar placeholders enquanto os dados estão carregando */}
         {isLoading
-          ? Array(6) // Exibir 6 placeholders como exemplo
+          ? Array(6)
               .fill(null)
               .map((_, index) => (
                 <section
@@ -109,8 +107,7 @@ export default function Home() {
               ))
           : cars.map((car) => (
               <Link key={car.id} to={`/car/${car.id}`}>
-                <section className="w-full bg-white rounded-lg hover:scale-105 transition-all">
-                  {/* Placeholder completo enquanto a imagem é carregada */}
+                <section className="w-full bg-white rounded-lg hover:opcaity-90 transition-all">
                   {!loadedImages[car.id] && (
                     <div className="animate-pulse">
                       <div className="w-full h-72 rounded-lg bg-slate-200"></div>
@@ -126,7 +123,6 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Exibição final dos dados */}
                   {loadedImages[car.id] && (
                     <>
                       <img
