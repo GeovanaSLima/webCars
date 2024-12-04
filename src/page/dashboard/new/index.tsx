@@ -9,7 +9,9 @@ import { ChangeEvent, useContext, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import { v4 as uuidV4 } from "uuid";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../../services/firebaseConnection";
+import { db, storage } from "../../../services/firebaseConnection";
+import { addDoc, collection } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 const schema = z.object({
   name: z.string().min(1, "O campo nome é obrigatório"),
@@ -50,9 +52,39 @@ export default function New() {
       alert("Por favor adicione a imagem do veículo")
       return;
     }  
+
     
-    console.log(data);
-    await handleImageUpload(images);
+    const uploadedImages = await handleImageUpload(images);
+
+    const carImages = uploadedImages.map((car) => ({
+      uid: car.uid,
+      name: car.name,
+      url: car.url,
+    }));
+
+    addDoc(collection(db, "cars"), {
+      name: data.name,
+      model: data.model,
+      whatsapp: data.whatsapp,
+      year: data.year,
+      city: data.city,
+      km: data.km,
+      price: data.price,
+      description: data.description,
+      created: new Date(),
+      owner: user?.name,
+      userUid: user?.uid,
+      images: carImages,
+    })
+    .then(() => {
+      toast.success("Cadastrado com sucesso");
+      reset();
+      setImages([]);
+    })
+    .catch(() => {
+      toast.error("Erro ao cadastrar carro");
+    })
+    
 
   }
 
@@ -79,27 +111,28 @@ export default function New() {
     }
   }
 
-  async function handleImageUpload(imagesList: ImageProps[]) {
+  async function handleImageUpload(imagesList: ImageProps[]): Promise<ImageProps[]> {
     if (!user?.uid) {
-      return;
+      return [];
     }
-
-    const currentUid = user?.uid;
-
-    imagesList.map((image) => {
-      
-      const uploadRef = ref(storage, `images/${currentUid}/${image.uid}`)
-
-      uploadBytes(uploadRef, image.file)
-      .then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((downloadUrl) => {
-          console.log(downloadUrl);
-        })
-      })
-    })
-
-    
-
+  
+    const currentUid = user.uid;
+  
+    const uploadPromises = imagesList.map(async (image) => {
+      const uploadRef = ref(storage, `images/${currentUid}/${image.uid}`);
+      const snapshot = await uploadBytes(uploadRef, image.file);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+  
+      return {
+        ...image,
+        url: downloadUrl,
+      };
+    });
+  
+    const updatedImages = await Promise.all(uploadPromises);
+  
+    setImages(updatedImages); 
+    return updatedImages; 
   }
 
   function handleDeleteImage(itemUid: string | null) {
