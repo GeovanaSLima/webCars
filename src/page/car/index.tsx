@@ -116,7 +116,7 @@ export default function CarDetail() {
           <p>{car?.whatsapp}</p>
 
           <a
-           href={`https://api.whatsapp.com/send?phone=${car?.whatsapp}&text=Olá, gostaria de saber mais detalhes sobre esse anúncio do ${car?.name} no WebCars`}
+           href={`https://api.whatsapp.com/send?phone=${car?.whatsapp}&text=Olá, gostaria de saber mais detalhes sobre esse anúncio do ${car?.name} no WebCarros`}
            target={"_blank"}
            className="bg-green-500 w-full text-white flex items-center justify-center gap-2 my-6 h-11 text-xl rounded-md font-medium cursor-pointer"
           >

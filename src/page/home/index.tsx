@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Container } from "../../components/container";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
 import { Link } from "react-router-dom";
 
@@ -31,57 +31,109 @@ export default function Home() {
   const [cars, setCars] = useState<CarProps[]>([]);
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [input, setInput] = useState("");
 
   useEffect(() => {
-    async function loadCars() {
-      const carsRef = collection(db, "cars");
-      const queryRef = query(carsRef, orderBy("created", "desc"));
-
-      try {
-        const snapshot = await getDocs(queryRef);
-        const listCars: CarProps[] = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name,
-          year: doc.data().year,
-          km: doc.data().km,
-          city: doc.data().city,
-          price: doc.data().price,
-          images: doc.data().images,
-          uid: doc.data().uid,
-        }));
-
-        setCars(listCars);
-        setIsLoading(false);
-
-        const initialLoadedImages = { ...loadedImages };
-        listCars.forEach((car) => {
-          if (car.images.length > 0 && car.images[0]?.url) {
-            const img = new Image();
-            img.src = car.images[0].url;
-            img.onload = () => {
-              initialLoadedImages[car.id] = true;
-              setLoadedImages({ ...initialLoadedImages });
-            };
-          }
-        });
-      } catch (error) {
-        console.error("Erro ao carregar os carros:", error);
-        setIsLoading(false); 
-      }
-    }
+    
 
     loadCars();
   }, []);
+  
+  async function loadCars() {
+    const carsRef = collection(db, "cars");
+    const queryRef = query(carsRef, orderBy("created", "desc"));
+
+    try {
+      const snapshot = await getDocs(queryRef);
+      const listCars: CarProps[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        name: doc.data().name,
+        year: doc.data().year,
+        km: doc.data().km,
+        city: doc.data().city,
+        price: doc.data().price,
+        images: doc.data().images,
+        uid: doc.data().uid,
+      }));
+
+      setCars(listCars);
+      setIsLoading(false);
+
+      const initialLoadedImages = { ...loadedImages };
+      listCars.forEach((car) => {
+        if (car.images.length > 0 && car.images[0]?.url) {
+          const img = new Image();
+          img.src = car.images[0].url;
+          img.onload = () => {
+            initialLoadedImages[car.id] = true;
+            setLoadedImages({ ...initialLoadedImages });
+          };
+        }
+      });
+    } catch (error) {
+      console.error("Erro ao carregar os carros:", error);
+      setIsLoading(false); 
+    }
+  }
+
+  async function handleSearchCar() {
+    if(input === '') {
+      loadCars();
+      return;
+    }
+
+    setCars([]);
+    setLoadedImages({});
+
+    const q = query(collection(db, "cars"), 
+    where("name", ">=", input.toUpperCase()),
+    where("name", "<=", input.toUpperCase() + "\uf8ff")
+    )
+
+    const querySnapshot = await getDocs(q)
+
+    let listCars = [] as CarProps[];
+
+    querySnapshot.forEach((doc) => {
+      listCars.push({
+        id: doc.id,
+        name: doc.data().name,
+        year: doc.data().year,
+        km: doc.data().km,
+        city: doc.data().city,
+        price: doc.data().price,
+        images: doc.data().images,
+        uid: doc.data().uid,
+      })
+    })
+
+    setCars(listCars);
+    setIsLoading(false);
+
+    const initialLoadedImages = { ...loadedImages };
+      listCars.forEach((car) => {
+        if (car.images.length > 0 && car.images[0]?.url) {
+          const img = new Image();
+          img.src = car.images[0].url;
+          img.onload = () => {
+            initialLoadedImages[car.id] = true;
+            setLoadedImages({ ...initialLoadedImages });
+          };
+        }
+      });
+  }
 
   return (
     <Container>
       <section className="bg-white p-4 rounded-lg w-full max-w-3xl mx-auto flex justify-center items-center gap-2">
         <input
+          value={input}
+          onChange={ (e) => setInput(e.target.value) }
           type="text"
           placeholder="Digite o nome do carro..."
           className="w-full border-2 rounded-lg h-9 px-3 outline-none"
         />
-        <button className="bg-primary-500 hover:bg-primary-600 transition-all h-9 px-8 rounded-lg text-white font-medium text-lg shadow-md">
+        <button onClick={handleSearchCar} className="bg-primary-500 hover:bg-primary-600 transition-all h-9 px-8 rounded-lg text-white font-medium text-lg shadow-md">
           Buscar
         </button>
       </section>
