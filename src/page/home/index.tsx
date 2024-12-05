@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useCarContext } from "../../context/CarContext";
 import { Container } from "../../components/container";
 import { CarGrid } from "../../components/carGrid";
+import { SearchEmpty } from "../../components/searchEmpty";
 
 export default function Home() {
-  const { loadCars, searchCars } = useCarContext();
+  const { loadCars, searchCars, isLoading, cars } = useCarContext();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const hasResults = cars.length > 0;
 
   useEffect(() => {
     loadCars();
@@ -33,11 +36,15 @@ export default function Home() {
         </button>
       </section>
 
-      <h1 className="font-bold text-center mt-6 text-2xl mb-4">
+      <h1 className="font-bold text-center my-10 text-2xl">
         Carros novos e usados em todo o Brasil
       </h1>
 
-      <CarGrid />
+      {!isLoading && !hasResults ? (
+        <SearchEmpty searchText={searchQuery} />
+      ) : (
+        <CarGrid />
+      )}
     </Container>
   );
 }
