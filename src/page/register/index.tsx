@@ -9,6 +9,7 @@ import { createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase
 import { auth } from '../../services/firebaseConnection';
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const schema = z.object({
   name: z.string().min(1, "O campo nome é obrigatório"),
@@ -48,13 +49,13 @@ export default function Register() {
         email: data.email
       })
 
-      console.log("Cadastrado com sucesso")
+      toast.success("Cadastro realizado com sucesso! Seja bem-vindo(a)")
 
       navigate("/dashboard", { replace: true })
     })
 
-    .catch((error) => {
-      console.log("Erro ao cadastrar o usuário", error)
+    .catch(() => {
+      toast.error("Erro ao cadastrar")
     })
 
   }
