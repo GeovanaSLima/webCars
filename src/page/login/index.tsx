@@ -34,16 +34,13 @@ export default function Login() {
 
   function onSubmit(data: FormData) {
     signInWithEmailAndPassword(auth, data.email, data.password)
-    .then(() => {
-      toast.success("Logado com Sucesso!")
-      navigate("/dashboard", { replace: true })
-    })
-    .catch((error) => {
-      console.error("Erro", error);
-      console.log(error)
-      toast.error("Erro ao fazer o Login");
-
-    })
+      .then(() => {
+        toast.success("Logado com Sucesso!")
+        navigate("/dashboard", { replace: true })
+      })
+      .catch(() => {
+        toast.error("Erro ao fazer o Login. Tente novamente.");
+      })
   }
 
 
