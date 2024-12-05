@@ -5,8 +5,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../../components/input";
-import { ChangeEvent, useContext, useState } from "react";
-import { AuthContext } from "../../../context/AuthContext";
+import { ChangeEvent, useState } from "react";
+import { useAuthContext } from "../../../context/AuthContext";
 import { v4 as uuidV4 } from "uuid";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../../services/firebaseConnection";
@@ -37,7 +37,7 @@ interface ImageProps {
 }
 
 export default function New() {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuthContext();
 
   const [images, setImages] = useState<ImageProps[]>([]);
 

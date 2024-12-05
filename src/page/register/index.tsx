@@ -7,8 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 import { auth } from '../../services/firebaseConnection';
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import { useEffect } from 'react';
+import { useAuthContext } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const schema = z.object({
@@ -21,7 +21,7 @@ type FormData = z.infer<typeof schema>
 
 export default function Register() {
   const navigate = useNavigate();
-  const { handleUserInfo } = useContext(AuthContext);
+  const { handleUserInfo } = useAuthContext();
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),

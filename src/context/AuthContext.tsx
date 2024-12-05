@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { ReactNode, createContext, useEffect, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../services/firebaseConnection";
 
 interface AuthProviderProps {
@@ -21,7 +21,7 @@ interface UserProps {
 
 export const AuthContext = createContext({} as AuthContextData)
 
-function AuthProvider({ children }: AuthProviderProps) {
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
@@ -69,4 +69,10 @@ function AuthProvider({ children }: AuthProviderProps) {
   )
 }
 
-export default AuthProvider;
+export const useAuthContext = (): AuthContextData => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useCarContext deve ser usado dentro de um AuthProvider.");
+  }
+  return context;
+};
