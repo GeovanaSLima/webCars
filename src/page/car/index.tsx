@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Container } from "../../components/container";
 import { CarProps } from "../home";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../services/firebaseConnection";
 import { doc, getDoc } from "firebase/firestore";
 import { FaWhatsapp } from "react-icons/fa";
@@ -11,10 +11,12 @@ import { Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+import { toast } from "react-toastify";
 
 export default function CarDetail() {
   const [car, setCar] = useState<CarProps>();
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadCar() {
@@ -24,6 +26,12 @@ export default function CarDetail() {
 
       getDoc(docRef)
       .then((snapshot) => {
+
+        if(!snapshot.data()) {
+          navigate("/");
+        }
+
+
         setCar({
           id: snapshot.id,
           name: snapshot.data()?.name,
@@ -48,26 +56,28 @@ export default function CarDetail() {
   
   return (
     <Container>
-      <Swiper
-        slidesPerView={1}
-        navigation
-        pagination={{
-          clickable: true,
-        }}
-        modules={[Pagination, Navigation]}
-        breakpoints={{
-          720: {
-            slidesPerView: 2,
-            spaceBetween: 10,
-          },
-        }}
-      >
-        {car?.images.map( image => (
-          <SwiperSlide key={image.name}>
-            <img src={image.url} className="w-full h-96 object-cover"/>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      { car && (
+        <Swiper
+          slidesPerView={1}
+          navigation
+          pagination={{
+            clickable: true,
+          }}
+          modules={[Pagination, Navigation]}
+          breakpoints={{
+            720: {
+              slidesPerView: 2,
+              spaceBetween: 10,
+            },
+          }}
+        >
+          {car?.images.map( image => (
+            <SwiperSlide key={image.name}>
+              <img src={image.url} className="w-full h-96 object-cover"/>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      )}
 
       { car && (
         <main className="w-full bg-white rounded-lg p-6 my-4">
@@ -106,6 +116,8 @@ export default function CarDetail() {
           <p>{car?.whatsapp}</p>
 
           <a
+           href={`https://api.whatsapp.com/send?phone=${car?.whatsapp}&text=Olá, gostaria de saber mais detalhes sobre esse anúncio do ${car?.name} no WebCars`}
+           target={"_blank"}
            className="bg-green-500 w-full text-white flex items-center justify-center gap-2 my-6 h-11 text-xl rounded-md font-medium cursor-pointer"
           >
             Conversar com vendedor
