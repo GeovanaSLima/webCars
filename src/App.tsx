@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import Home from "./page/home";
-import Login from "./page/login";
-import Register from "./page/register";
-import CarDetail from "./page/car";
-import Dashboard from "./page/dashboard";
-import New from "./page/dashboard/new";
+import Home from "./pages/home";
+import Login from "./pages/login";
+import Register from "./pages/register";
+import CarDetail from "./pages/car";
+import Dashboard from "./pages/dashboard";
+import New from "./pages/dashboard/new";
 import Layout from "./components/layout";
 import { Private } from "./routes/Private";
 

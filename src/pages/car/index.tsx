@@ -1,16 +1,14 @@
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import { useEffect, useState } from "react";
 import { Container } from "../../components/container";
-import { CarProps } from "../home";
 import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../services/firebaseConnection";
 import { doc, getDoc } from "firebase/firestore";
 import { FaWhatsapp } from "react-icons/fa";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from 'swiper/modules';
-
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+import { CarProps } from "../../context/CarContext";
+import Slider from "react-slick";
 
 export default function CarDetail() {
   const [car, setCar] = useState<CarProps>();
@@ -19,66 +17,72 @@ export default function CarDetail() {
 
   useEffect(() => {
     async function loadCar() {
-      if(!id) { return; }
+      if (!id) { return; }
 
-      const docRef = doc(db, "cars", id)
+      const docRef = doc(db, "cars", id);
 
       getDoc(docRef)
-      .then((snapshot) => {
+        .then((snapshot) => {
+          if (!snapshot.data()) {
+            navigate("/");
+          }
 
-        if(!snapshot.data()) {
-          navigate("/");
-        }
-
-
-        setCar({
-          id: snapshot.id,
-          name: snapshot.data()?.name,
-          year: snapshot.data()?.year,
-          city: snapshot.data()?.city,
-          model: snapshot.data()?.model,
-          uid: snapshot.data()?.uid,
-          description: snapshot.data()?.description,
-          price: snapshot.data()?.price,
-          km: snapshot.data()?.km,
-          whatsapp: snapshot.data()?.whatsapp,
-          created: snapshot.data()?.created,
-          owner: snapshot.data()?.owner,
-          images: snapshot.data()?.images
-        })
-      })
+          setCar({
+            id: snapshot.id,
+            name: snapshot.data()?.name,
+            year: snapshot.data()?.year,
+            city: snapshot.data()?.city,
+            model: snapshot.data()?.model,
+            uid: snapshot.data()?.uid,
+            description: snapshot.data()?.description,
+            price: snapshot.data()?.price,
+            km: snapshot.data()?.km,
+            whatsapp: snapshot.data()?.whatsapp,
+            created: snapshot.data()?.created,
+            owner: snapshot.data()?.owner,
+            images: snapshot.data()?.images,
+          });
+        });
     }
 
-    loadCar()
-  }, [id]) 
+    loadCar();
+  }, [id]);
 
-  
   return (
     <Container>
-      { car && (
-        <Swiper
-          slidesPerView={1}
-          navigation
-          pagination={{
-            clickable: true,
-          }}
-          modules={[Pagination, Navigation]}
-          breakpoints={{
-            720: {
-              slidesPerView: 2,
-              spaceBetween: 10,
-            },
-          }}
-        >
-          {car?.images.map( image => (
-            <SwiperSlide key={image.name}>
-              <img src={image.url} className="w-full h-96 object-cover"/>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+      {car && (
+        <div className="min-h-0 min-w-0 relative">
+          <Slider
+            dots={true} 
+            infinite={true} 
+            speed={500} 
+            slidesToShow={2} 
+            slidesToScroll={1} 
+            responsive={[
+              {
+                breakpoint: 720, 
+                settings: {
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
+                  infinite: true,
+                },
+              },
+            ]}
+          >
+            {car?.images.map((image) => (
+              <div key={image.name} className="px-2">
+                <img
+                  src={image.url}
+                  alt={image.name}
+                  className="w-full h-96 object-cover px-2 lg:px-0"
+                />
+              </div>
+            ))}
+          </Slider>
+        </div>
       )}
 
-      { car && (
+      {car && (
         <main className="w-full bg-white rounded-lg p-6 my-4">
           <div className="flex flex-col sm:flex-row mb-4 items-center justify-between">
             <h1 className="font-bold text-3xl text-black">{car?.name}</h1>
@@ -115,17 +119,15 @@ export default function CarDetail() {
           <p>{car?.whatsapp}</p>
 
           <a
-           href={`https://api.whatsapp.com/send?phone=${car?.whatsapp}&text=Olá, gostaria de saber mais detalhes sobre esse anúncio do ${car?.name} no WebCarros`}
-           target={"_blank"}
-           className="bg-green-500 w-full text-white flex items-center justify-center gap-2 my-6 h-11 text-xl rounded-md font-medium cursor-pointer"
+            href={`https://api.whatsapp.com/send?phone=${car?.whatsapp}&text=Olá, gostaria de saber mais detalhes sobre esse anúncio do ${car?.name} no WebCarros`}
+            target={"_blank"}
+            className="bg-green-500 w-full text-white flex items-center justify-center gap-2 my-6 h-11 text-xl rounded-md font-medium cursor-pointer"
           >
             Conversar com vendedor
             <FaWhatsapp size={26} color="#FFF" />
           </a>
-
         </main>
       )}
-
     </Container>
-  )
+  );
 }

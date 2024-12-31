@@ -4,12 +4,8 @@ import './index.css'
 import { router } from './App.tsx'
 import { RouterProvider } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.tsx'
-import { register } from 'swiper/element/bundle'
-
 import { Toaster } from 'react-hot-toast'
 import { CarProvider } from './context/CarContext.tsx'
-
-register();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
