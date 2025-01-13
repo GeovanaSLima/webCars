@@ -98,4 +98,3 @@ $ npm run dev
 3. Search Cars: Use the search dashboard to find cars that meet your requirements.
 
 4. Contact Dealers: Click the "Contact Seller" button to initiate a conversation via WhatsApp.
-
