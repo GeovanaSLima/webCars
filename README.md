@@ -9,7 +9,6 @@
 </br>
 </br>
 
-
 ![webCars homepage](https://github.com/user-attachments/assets/8ca86e9b-3952-4dc1-8cfb-cecb7756ae80)
 
 </br>
